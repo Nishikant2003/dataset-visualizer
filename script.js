@@ -9,7 +9,7 @@ const DatasetModel = Backbone.Model.extend({
                 rows: [
                     ['Jan', 1200, 300, 100, 150, 200],
                     ['Feb', 1200, 310, 90, 140, 180],
-                    ['Mar', 1200, 320, 110, 160, 190],
+                    ['Mar', 1000, 320, 110, 160, 190],
                     ['Apr', 1200, 315, 120, 150, 220],
                     ['May', 1200, 325, 100, 155, 210],
                     ['Jun', 1200, 330, 105, 145, 230],
@@ -47,7 +47,7 @@ const DatasetView = Backbone.View.extend({
     el: 'body',
     model: new DatasetModel(),
 
-    /**trigger change event when <input name="dataset"> changes -> calls updateDataset*/ 
+    /**trigger change event when <input name="dataset"> changes -> calls updateDataset*/
     events: {
         'change input[name="dataset"]': 'updateDataset'
     },
@@ -56,7 +56,7 @@ const DatasetView = Backbone.View.extend({
      * listenTo method to listen for changes in the model and call render
      */
     initialize: function () {
-        this.ariaLiveAnnouncer=$('#announcement');
+        this.ariaLiveAnnouncer = $('#announcement');
         this.tableContainer = $('#table-container');
         this.tableTemplate = Handlebars.compile($('#table-template').html());
         this.listenTo(this.model, 'change', this.render);
@@ -82,9 +82,50 @@ const DatasetView = Backbone.View.extend({
         const dataset = this.model.get('datasets')[currentDataset];
         console.log(dataset)
         this.tableContainer.html(this.tableTemplate(dataset));
+        this.plotChart(dataset);
     },
 
+    plotChart: function (dataset) {
+        seriesCharts(dataset);
 
+    },
+    seriesCharts: function (dataset) {
+        const headers = dataset.headers;
+        const rows = dataset.rows;
+        const seriesData = [];
+
+        // Find all numeric columns (skip the first column, which is a label)
+        // Prepare a series for each numeric column
+        for (let col = 1; col < headers.length; col++) {
+            const data = rows.map((row, i) => [i, row[col]]); //[[1, 1200], [1, 1200], ... [2, 1000], ...]]
+            /**flot js data format */
+            seriesData.push({
+                label: headers[col],
+                data: data,
+                lines: { show: true },
+                points: { show: true }
+            });
+        }
+
+        // X-axis labels (first column)
+        const xLabels = rows.map((row, i) => [i, row[0]]);
+
+        // Draw the chart
+        $('#chart-container').empty();
+        $('#chart-container').append('<div id="chart" style="width:100%;height:300px;"></div>');
+        $.plot('#chart', seriesData, {
+            xaxis: {
+                ticks: xLabels,
+                mode: "categories"
+            },
+            yaxis: {
+                min: 0
+            },
+            legend: {
+                show: true
+            }
+        });
+    }
 });
 
 // Initialize the view when the page loads
