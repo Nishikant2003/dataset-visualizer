@@ -47,12 +47,14 @@ const DatasetView = Backbone.View.extend({
     el: 'body',
     model: new DatasetModel(),
 
-    /*trigger change event when <input name="dataset"> changes -> calls updateDataset*/ 
+    /**trigger change event when <input name="dataset"> changes -> calls updateDataset*/ 
     events: {
         'change input[name="dataset"]': 'updateDataset'
     },
 
-    
+    /**aria-live polite, table-container and template initialized
+     * listenTo method to listen for changes in the model and call render
+     */
     initialize: function () {
         this.ariaLiveAnnouncer=$('#announcement');
         this.tableContainer = $('#table-container');
@@ -61,10 +63,12 @@ const DatasetView = Backbone.View.extend({
         this.render();
     },
 
+    /** changes the aria-live content */
     announceChange: function (message) {
         this.ariaLiveAnnouncer.text(message);
     },
 
+    /** updates the current dataset based on user selection from radio group*/
     updateDataset: function (event) {
         const selectedDataset = event.currentTarget.value;
         console.log(selectedDataset)
@@ -72,6 +76,7 @@ const DatasetView = Backbone.View.extend({
         this.announceChange(`Dataset changed to: ${selectedDataset}`);
     },
 
+    /** renders the table handlebrar template based on the current dataset */
     render: function () {
         const currentDataset = this.model.get('currentDataset');
         const dataset = this.model.get('datasets')[currentDataset];
