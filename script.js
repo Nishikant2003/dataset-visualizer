@@ -4,7 +4,7 @@ const DatasetModel = Backbone.Model.extend({
         currentDataset: 'Monthly Expenses',
         datasets: {
             'Monthly Expenses': {
-                caption: 'Monthly Expenses Table',
+                caption: 'Monthly Expenses',
                 headers: ['Month', 'Rent', 'Food', 'Transport', 'Utilities', 'Entertainment'],
                 rows: [
                     ['Jan', 1200, 300, 100, 150, 200],
@@ -16,7 +16,7 @@ const DatasetModel = Backbone.Model.extend({
                 ]
             },
             'Weather Data': {
-                caption: 'Weather Data Table',
+                caption: 'Weather Data',
                 headers: ['Month', 'Avg Temp (°C)'],
                 rows: [
                     ['Jan', 5],
@@ -28,7 +28,7 @@ const DatasetModel = Backbone.Model.extend({
                 ],
             },
             'Quiz Scores': {
-                caption: 'Quiz Scores Table',
+                caption: 'Quiz Scores',
                 headers: ['Test', 'Math', 'Science', 'History', 'English'],
                 rows: [
                     ['Test 1', 80, 85, 78, 90],
@@ -58,22 +58,44 @@ const DatasetView = Backbone.View.extend({
     initialize: function () {
         this.ariaLiveAnnouncer = $('#announcement');
         this.tableContainer = $('#table-container');
+        this.chartContainer = $('#chart-container');
         this.tableTemplate = Handlebars.compile($('#table-template').html());
         this.listenTo(this.model, 'change', this.render);
+        this.updateChartAriaLabel();
         this.render();
     },
 
     /** changes the aria-live content */
-    announceChange: function (message) {
+    announceChange: function (selectedDataset) {
+        this.model.get('datasets')[selectedDataset]
+        const message = `Chart Updated to ${selectedDataset}`
         this.ariaLiveAnnouncer.text(message);
-    },
+    }, 
 
+    /** update the chart aria label */ 
+    updateChartAriaLabel: function () {
+        const selectedDataset=this.model.get('currentDataset')
+        const message = `Current dataset is ${selectedDataset}`;
+        this.chartContainer.attr('aria-label', message);
+    },
+    updateTableAriaLabel:function () {
+        const selectedDataset=this.model.get('currentDataset')
+        const message = `Table for ${selectedDataset.caption} table is displayed.`;
+        this.tableContainer.attr('aria-label',message);
+    },
+    // updateTableRowsAriaLabels:function (dataset) {
+
+    // },
+    
     /** updates the current dataset based on user selection from radio group*/
     updateDataset: function (event) {
         const selectedDataset = event.currentTarget.value;
         console.log(selectedDataset)
         this.model.set('currentDataset', selectedDataset);
-        this.announceChange(`Dataset changed to: ${selectedDataset}`);
+        this.announceChange(selectedDataset);
+        this.updateChartAriaLabel();
+        // $(window).on('resize', this.plotChart(this.model.get('datasets')[selectedDataset]));
+
     },
 
     /** renders the table handlebrar template based on the current dataset */
@@ -84,12 +106,11 @@ const DatasetView = Backbone.View.extend({
         this.tableContainer.html(this.tableTemplate(dataset));
         this.plotChart(dataset);
     },
-
+    
     plotChart: function (dataset) {
         this.seriesCharts(dataset);
-        this.barCharts(dataset);
-
     },
+
     seriesCharts: function (dataset) {
         const headers = dataset.headers;
         const rows = dataset.rows;
@@ -104,7 +125,8 @@ const DatasetView = Backbone.View.extend({
                 label: headers[col],
                 data: data,
                 lines: { show: true },
-                points: { show: true }
+                points: { show: true },
+
             });
         }
 
@@ -113,7 +135,7 @@ const DatasetView = Backbone.View.extend({
 
         // Draw the chart
         $('#chart-container').empty();
-        $('#chart-container').append('<div id="chart" style="width:100%;height:300px;"></div>');
+        $('#chart-container').append('<div aria-hidden="true" id="chart" style="width:100%;height:300px;"></div>');
         $.plot('#chart', seriesData, {
             xaxis: {
                 ticks: xLabels,
@@ -122,43 +144,33 @@ const DatasetView = Backbone.View.extend({
             yaxis: {
                 min: 0
             },
+            grid: {
+                hoverable: true,
+                clickable: true
+            },
+            series: {
+                shadowSize: 0
+            },
+            responsive: true,
             legend: {
                 show: true
             }
         });
+
+        // //plothover event to show value on hover
+        $('#chart').bind('plothover', function (event, pos, item) {
+            if (item) {
+                const x = item.datapoint[0];
+                const y = item.datapoint[1];
+                console.log(`Hovered at x: ${x}, y: ${y} (${headers[item.seriesIndex]}) ${item.seriesIndex}`);
+                const message = `${headers[item.seriesIndex + 1]}: ${y} at ${xLabels[x][1]}`
+                $('#tooltips').html(message).css({ top: item.pageY + 5, left: item.pageX + 5 }).fadeIn(200);
+            } else {
+                $('#tooltips').hide();
+            }
+        });
     },
-    barCharts: function (dataset) {
-        // var data1 = [["January", 10], ["February", 8], ["March", 4], ["April", 13], ["May", 17], ["June", 9]];
-        // var data2 = [["January", 1], ["February", 5], ["March", 6], ["April", 3], ["May", 37], ["June", 39]];
-        console.log(dataset.rows)
 
-        // $.plot($("#placeholder"),
-        //     [{
-        //         data: data1,
-        //         bars: {
-        //             show: true,
-        //             barWidth: 0.2,
-        //             align: "left",
-        //         }
-        //     },
-        //     {
-        //         data: data2,
-        //         bars: {
-        //             show: true,
-        //             barWidth: 0.2,
-        //             align: "right",
-        //         }
-        //     }
-        //     ],
-        //     {
-        //         xaxis: {
-        //             mode: "categories",
-        //             tickLength: 0
-        //         }
-        //     }
-        // );
-
-    }
 });
 
 // Initialize the view when the page loads

@@ -11,26 +11,28 @@
 </head>
 
 <body>
-    <main role="main" class="container py-4">
+    <main role="main" class="container-sm py-4">
         <h1>Dataset Visualizer</h1>
 
         <!-- dataset selector radio button group -->
-        <fieldset aria-labelledby="dataset-label">
-            <legend id="dataset-label">Choose Dataset from Monthly Expenses Dataset, Weather Dataset, and Quiz Scores
-                Dataset given below.</legend>
+        <div tabindex="0" role="radiogroup" aria-labelledby="dataset-label">
+            <p id="dataset-label">Choose Dataset from Monthly Expenses Dataset, Weather Dataset, and Quiz Scores
+                Dataset given below.</p>
+
             <label><input type="radio" name="dataset" value="Monthly Expenses" checked> Monthly Expenses</label><br />
             <label><input type="radio" name="dataset" value="Weather Data"> Weather Data</label><br />
             <label><input type="radio" name="dataset" value="Quiz Scores"> Quiz Scores</label>
-        </fieldset>
+        </div>
 
         <div id="announcement" class="announcement" aria-live="polite"></div>
 
-        <div id="chart-container" class="my-4">
+        <div id="tooltips" class="tooltips "></div>
+
+        <div tabindex="0" id="chart-container" class="chart-container my-4">
             <!-- Flot JS Chart -->
-            <!-- Paper JS Chart -->
         </div>
 
-        <div id="table-container">
+        <div tabindex="0" id="table-container">
             <!-- handlebar template for table added here from JS-->
         </div>
         
@@ -52,7 +54,7 @@
             </thead>
             <tbody>
                 {{#each rows}}
-                    <tr>
+                    <tr tabindex="0">
                         {{#each this}}
                             <td>{{this}}</td>
                         {{/each}}
@@ -68,6 +70,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.4.0/backbone-min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
     <script src="https://cdn.jsdelivr.net/jquery.flot/0.8.3/jquery.flot.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.flot/0.8.3/jquery.flot.resize.min.js"></script>
     <script src="script.js"></script>
 </body>
 

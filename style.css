@@ -5,6 +5,21 @@ table caption {
     margin-bottom: 10px;
 }
 
-.announcement {
+
+
+.tooltips {
+    position: absolute;
     display: none;
+    z-index: 1000;
+    background: #333;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.chart-container {
+    position: relative;
+    display: flex;
+    width: auto;
 }
