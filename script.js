@@ -62,6 +62,8 @@ const DatasetView = Backbone.View.extend({
         this.tableTemplate = Handlebars.compile($('#table-template').html());
         this.listenTo(this.model, 'change', this.render);
         this.updateChartAriaLabel();
+        this.updateTableAriaLabel();
+
         this.render();
     },
 
@@ -83,9 +85,11 @@ const DatasetView = Backbone.View.extend({
         const message = `Table for ${selectedDataset.caption} table is displayed.`;
         this.tableContainer.attr('aria-label',message);
     },
-    // updateTableRowsAriaLabels:function (dataset) {
-
-    // },
+    updateTableRowsAriaLabels:function (dataset) {
+        $('#table-container tbody tr').each(function(){
+            $(this).attr('aria-label',"Row data")
+        })
+    },
     
     /** updates the current dataset based on user selection from radio group*/
     updateDataset: function (event) {
@@ -94,8 +98,7 @@ const DatasetView = Backbone.View.extend({
         this.model.set('currentDataset', selectedDataset);
         this.announceChange(selectedDataset);
         this.updateChartAriaLabel();
-        // $(window).on('resize', this.plotChart(this.model.get('datasets')[selectedDataset]));
-
+        this.updateTableAriaLabel();
     },
 
     /** renders the table handlebrar template based on the current dataset */
