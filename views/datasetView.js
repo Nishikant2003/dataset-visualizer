@@ -20,7 +20,6 @@ const DatasetView = Backbone.View.extend({
             this.listenTo(this.model, 'change', this.render);
             this.render();
             this.updateChartAriaLabel();
-            this.updateTableRowsAriaLabels();
         });
 
     },
@@ -50,13 +49,7 @@ const DatasetView = Backbone.View.extend({
         this.chartContainer.attr('aria-label', message);
     },
 
-    /** update the table rows aria labels */
-    updateTableRowsAriaLabels: function () {
-        $('#table-container tbody tr').each(function () {
-            $(this).attr('aria-label', "Row data")
-        })
-    },
-
+ 
     /** updates the current dataset based on user selection from radio group*/
     updateDataset: function (event) {
         const selectedDataset = event.currentTarget.value;
@@ -64,7 +57,6 @@ const DatasetView = Backbone.View.extend({
         this.model.set('currentDataset', selectedDataset);
         this.announceChange(selectedDataset);
         this.updateChartAriaLabel();
-        this.updateTableRowsAriaLabels();
 
     },
 
