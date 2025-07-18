@@ -1,0 +1,25 @@
+<div class="table-responsive">
+    <table class="table table-bordered" tabindex="0">
+        <caption>{{caption}}</caption>
+        <thead>
+            <tr>
+                {{#each headers}}
+                    <th scope="col">{{this}}</th>
+                {{/each}}
+            </tr>
+        </thead>
+        <tbody>
+            {{#each rows}}
+                <tr>
+                    {{#each this}}
+                        {{#if @first}}
+                            <th scope="row">{{this}}</th>
+                        {{else}}   
+                            <td>{{this}}</td>
+                        {{/if}}
+                    {{/each}}
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>

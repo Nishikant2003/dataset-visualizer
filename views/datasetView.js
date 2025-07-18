@@ -1,47 +1,3 @@
-// Model for a Monthly Expenses, Weather Data, and Quiz Scores dataset
-const DatasetModel = Backbone.Model.extend({
-    defaults: {
-        currentDataset: 'Monthly Expenses',
-        datasets: {
-            'Monthly Expenses': {
-                caption: 'Monthly Expenses',
-                headers: ['Month', 'Rent', 'Food', 'Transport', 'Utilities', 'Entertainment'],
-                rows: [
-                    ['Jan', 1200, 300, 100, 150, 200],
-                    ['Feb', 1200, 310, 90, 140, 180],
-                    ['Mar', 1000, 320, 110, 160, 190],
-                    ['Apr', 1200, 315, 120, 150, 220],
-                    ['May', 1200, 325, 100, 155, 210],
-                    ['Jun', 1200, 330, 105, 145, 230],
-                ]
-            },
-            'Weather Data': {
-                caption: 'Weather Data',
-                headers: ['Month', 'Avg Temp (°C)'],
-                rows: [
-                    ['Jan', 5],
-                    ['Feb', 7],
-                    ['Mar', 12],
-                    ['Apr', 18],
-                    ['May', 22],
-                    ['Jun', 27],
-                ],
-            },
-            'Quiz Scores': {
-                caption: 'Quiz Scores',
-                headers: ['Test', 'Math', 'Science', 'History', 'English'],
-                rows: [
-                    ['Test 1', 80, 85, 78, 90],
-                    ['Test 2', 82, 80, 75, 88],
-                    ['Test 3', 78, 89, 82, 84],
-                    ['Test 4', 90, 92, 85, 87],
-                    ['Test 5', 85, 88, 80, 90],
-                ],
-            }
-        }
-    }
-});
-
 // View for rendering the dataset
 const DatasetView = Backbone.View.extend({
     el: 'body',
@@ -59,38 +15,48 @@ const DatasetView = Backbone.View.extend({
         this.ariaLiveAnnouncer = $('#announcement');
         this.tableContainer = $('#table-container');
         this.chartContainer = $('#chart-container');
-        this.tableTemplate = Handlebars.compile($('#table-template').html());
-        this.listenTo(this.model, 'change', this.render);
-        this.updateChartAriaLabel();
-        // this.updateTableAriaLabel();
 
-        this.render();
+        this.loadTemplate().then(() => {
+            this.listenTo(this.model, 'change', this.render);
+            this.render();
+            this.updateChartAriaLabel();
+            this.updateTableRowsAriaLabels();
+        });
+
     },
-
+    /**load the template from the file and compile it using Handlebars */
+    loadTemplate: function () {
+        return $.get('templates/table-template.handlebars').then((templateSource) => {
+            this.tableTemplate = Handlebars.compile(templateSource);
+        }).catch((error) => {
+            console.error('Error loading template:', error);
+        });
+    },
+    /**Get the values of the current dataset */
+    getCurrentDatasetValues: function () {
+        const selectedDataset = this.model.get('currentDataset');
+        return this.model.get('datasets')[selectedDataset]
+    },
     /** changes the aria-live content */
     announceChange: function (selectedDataset) {
-        this.model.get('datasets')[selectedDataset]
         const message = `Chart Updated to ${selectedDataset}`
         this.ariaLiveAnnouncer.text(message);
-    }, 
+    },
 
-    /** update the chart aria label */ 
+    /** update the chart aria label */
     updateChartAriaLabel: function () {
-        const selectedDataset=this.model.get('currentDataset')
-        const message = `Current dataset is ${selectedDataset}`;
+        const dataset = this.getCurrentDatasetValues();
+        const message = `${dataset.caption} chart with x axis as ${dataset.headers[0]} with intervals at ${dataset.rows.map(row => row[0])} and y axis as ${dataset.caption} and lines depicting ${dataset.headers.slice(1).join(', ')}`;
         this.chartContainer.attr('aria-label', message);
     },
-    // updateTableAriaLabel:function () {
-    //     const selectedDataset=this.model.get('currentDataset')
-    //     const message = `Table for ${selectedDataset.caption} table is displayed.`;
-    //     this.tableContainer.attr('aria-label',message);
-    // },
-    updateTableRowsAriaLabels:function (dataset) {
-        $('#table-container tbody tr').each(function(){
-            $(this).attr('aria-label',"Row data")
+
+    /** update the table rows aria labels */
+    updateTableRowsAriaLabels: function () {
+        $('#table-container tbody tr').each(function () {
+            $(this).attr('aria-label', "Row data")
         })
     },
-    
+
     /** updates the current dataset based on user selection from radio group*/
     updateDataset: function (event) {
         const selectedDataset = event.currentTarget.value;
@@ -98,18 +64,18 @@ const DatasetView = Backbone.View.extend({
         this.model.set('currentDataset', selectedDataset);
         this.announceChange(selectedDataset);
         this.updateChartAriaLabel();
-        // this.updateTableAriaLabel();
+        this.updateTableRowsAriaLabels();
+
     },
 
     /** renders the table handlebrar template based on the current dataset */
     render: function () {
-        const currentDataset = this.model.get('currentDataset');
-        const dataset = this.model.get('datasets')[currentDataset];
-        console.log(dataset)
+        const dataset = this.getCurrentDatasetValues();
         this.tableContainer.html(this.tableTemplate(dataset));
         this.plotChart(dataset);
     },
-    
+
+    /** plot the chart */
     plotChart: function (dataset) {
         this.seriesCharts(dataset);
     },
