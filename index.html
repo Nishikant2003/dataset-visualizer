@@ -11,6 +11,7 @@
 </head>
 
 <body>
+    
     <main role="main" class="container-sm py-4">
         <h1>Dataset Visualizer</h1>
 
@@ -19,9 +20,9 @@
             <legend id="dataset-label">Choose Dataset from Monthly Expenses Dataset, Weather Dataset, and Quiz Scores
                 Dataset given below.</legend>
 
-                <label><input type="radio" name="dataset" value="Monthly Expenses" checked > Monthly Expenses</label><br />
-                <label><input type="radio" name="dataset" value="Weather Data" > Weather Data</label><br />
-                <label><input type="radio" name="dataset" value="Quiz Scores" > Quiz Scores</label>
+                <label><input type="radio" name="dataset" value="Monthly Expenses" aria-label="Monthly Expenses Radio button" checked > Monthly Expenses</label><br />
+                <label><input type="radio" name="dataset" value="Weather Data" aria-label="Weather Data Radio button" > Weather Data</label><br />
+                <label><input type="radio" name="dataset" value="Quiz Scores" aria-label="Quiz Scores Radio button" > Quiz Scores</label>
             
             <div id="dataset-instructions" class="sr-only">Selecting a dataset will update both the chart and table below with new data, you can select new dataset using the up and down arrow keys on the keyboard</div>
         </fieldset>
