@@ -117,10 +117,8 @@ const DatasetView = Backbone.View.extend({
             }
         });
 
-        // Initialize Paper.js AFTER canvas is in DOM
         this.initializePaper(plot);
 
-        // Enhanced plothover event with Paper.js
         const self = this;
         $('#chart').bind('plothover', function (event, pos, item) {
             if (item) {
@@ -144,7 +142,7 @@ const DatasetView = Backbone.View.extend({
         });
     },
 
-    /** Initialize Paper.js - add this method to your DatasetView */
+    /** Initialize Paper.js */
     initializePaper: function (plot) {
         // Setup Paper.js with the canvas
         paper.setup('paper-overlay');
@@ -186,7 +184,7 @@ const DatasetView = Backbone.View.extend({
         paper.view.draw();
     },
 
-    /** Clear Paper.js highlights - add this method */
+    /** Clear Paper.js highlights  */
     clearPaperHighlights: function () {
         if (this.currentHighlight) {
             this.currentHighlight.remove();
