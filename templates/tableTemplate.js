@@ -29,7 +29,7 @@ templates['table-template'] = template({"1":function(container,depth0,helpers,pa
     + container.escapeExpression(container.lambda(depth0, depth0))
     + "</th>\r\n";
 },"7":function(container,depth0,helpers,partials,data) {
-    return "                            <td>"
+    return "                            <td tabindex=\"0\">"
     + container.escapeExpression(container.lambda(depth0, depth0))
     + "</td>\r\n";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {

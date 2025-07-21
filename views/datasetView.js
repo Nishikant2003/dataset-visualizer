@@ -87,7 +87,7 @@ const DatasetView = Backbone.View.extend({
         // Draw the chart with proper Paper.js setup
         $('#chart-container').empty();
         $('#chart-container').append(`
-            <div style="position: relative; width: 100%; height: 300px;">
+            <div aria-hidden=true style="position: relative; width: 100%; height: 300px;">
                 <div id="chart" style="width:100%;height:300px;"></div>
                 <canvas id="paper-overlay" width="600" height="300" 
                         style="position:absolute;top:0;left:0;pointer-events:none;z-index:5;">
@@ -149,18 +149,14 @@ const DatasetView = Backbone.View.extend({
         // Setup Paper.js with the canvas
         paper.setup('paper-overlay');
 
-        // Store plot reference for coordinate conversion
-        this.plot = plot;
-
         // Match canvas size to chart
         const chartWidth = $('#chart').width();
         const chartHeight = $('#chart').height();
         paper.view.viewSize = new paper.Size(chartWidth, chartHeight);
 
-        console.log('Paper.js initialized');
     },
 
-    /** Add Paper.js highlight effect - add this method */
+    /** Add Paper.js highlight effect  */
     addPaperHighlight: function (plot, item) {
         // Clear previous highlights
         this.clearPaperHighlights();
