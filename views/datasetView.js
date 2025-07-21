@@ -16,22 +16,13 @@ const DatasetView = Backbone.View.extend({
         this.ariaLiveAnnouncer = $('#announcement');
         this.tableContainer = $('#table-container');
         this.chartContainer = $('#chart-container');
-
-        this.loadTemplate().then(() => {
-            this.listenTo(this.model, 'change', this.render);
-            this.render();
-            this.updateChartAriaLabel();
-        });
+        this.tableTemplate = Handlebars.templates['table-template'];
+        this.listenTo(this.model, 'change', this.render);
+        this.render();
+        this.updateChartAriaLabel();
 
     },
-    /**load the template from the file and compile it using Handlebars */
-    loadTemplate: function () {
-        return $.get('templates/table-template.handlebars').then((templateSource) => {
-            this.tableTemplate = Handlebars.compile(templateSource);
-        }).catch((error) => {
-            console.error('Error loading template:', error);
-        });
-    },
+
 
     /**Get the values of the current dataset */
     getCurrentDatasetValues: function () {
@@ -135,17 +126,17 @@ const DatasetView = Backbone.View.extend({
             if (item) {
                 const x = item.datapoint[0];
                 const y = item.datapoint[1];
-                
+
                 // Show regular tooltip
                 const message = `${headers[item.seriesIndex + 1]}: ${y} at ${xLabels[x][1]}`;
-                $('#tooltips').html(message).css({ 
-                    top: item.pageY + 5, 
-                    left: item.pageX + 5 
+                $('#tooltips').html(message).css({
+                    top: item.pageY + 5,
+                    left: item.pageX + 5
                 }).fadeIn(200);
 
                 // Add Paper.js enhancement
                 self.addPaperHighlight(plot, item);
-                
+
             } else {
                 $('#tooltips').hide();
                 self.clearPaperHighlights();
@@ -154,53 +145,53 @@ const DatasetView = Backbone.View.extend({
     },
 
     /** Initialize Paper.js - add this method to your DatasetView */
-    initializePaper: function(plot) {
+    initializePaper: function (plot) {
         // Setup Paper.js with the canvas
         paper.setup('paper-overlay');
-        
+
         // Store plot reference for coordinate conversion
         this.plot = plot;
-        
+
         // Match canvas size to chart
         const chartWidth = $('#chart').width();
         const chartHeight = $('#chart').height();
         paper.view.viewSize = new paper.Size(chartWidth, chartHeight);
-        
+
         console.log('Paper.js initialized');
     },
 
     /** Add Paper.js highlight effect - add this method */
-    addPaperHighlight: function(plot, item) {
+    addPaperHighlight: function (plot, item) {
         // Clear previous highlights
         this.clearPaperHighlights();
-        
+
         // Get pixel position of the data point
-        const plotPoint = plot.pointOffset({ 
-            x: item.datapoint[0], 
-            y: item.datapoint[1] 
+        const plotPoint = plot.pointOffset({
+            x: item.datapoint[0],
+            y: item.datapoint[1]
         });
-        
+
         // Create animated highlight circle
         const circle = new paper.Path.Circle({
-            center: [plotPoint.left, plotPoint.top+0.5],
+            center: [plotPoint.left, plotPoint.top + 0.5],
             radius: 10,
             strokeColor: '#ff6b6b',
             strokeWidth: 1,
             dashArray: [4, 4],
         });
-        
-       circle.onFrame = function(event) {
-            this.rotate(2); 
-       }
+
+        circle.onFrame = function (event) {
+            this.rotate(2);
+        }
 
         // Store reference for cleanup
         this.currentHighlight = circle;
-        
+
         paper.view.draw();
     },
 
     /** Clear Paper.js highlights - add this method */
-    clearPaperHighlights: function() {
+    clearPaperHighlights: function () {
         if (this.currentHighlight) {
             this.currentHighlight.remove();
             this.currentHighlight = null;
@@ -214,7 +205,7 @@ const DatasetView = Backbone.View.extend({
         if (paper.view) {
             const chartWidth = $('#chart').width();
             const chartHeight = $('#chart').height();
-            
+
             $('#paper-overlay').attr('width', chartWidth).attr('height', chartHeight);
             paper.view.viewSize = new paper.Size(chartWidth, chartHeight);
             paper.view.draw();
