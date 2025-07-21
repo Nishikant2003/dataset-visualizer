@@ -1,23 +1,23 @@
-    <table class="table table-bordered" >
-        <caption>{{caption}}</caption>
-        <thead>
-            <tr>
-                {{#each headers}}
-                    <th scope="col">{{this}}</th>
+<table role="table" class="table table-bordered">
+    <caption>{{caption}}</caption>
+    <thead>
+        <tr>
+            {{#each headers}}
+                <th scope="col">{{this}}</th>
+            {{/each}}
+        </tr>
+    </thead>
+    <tbody>
+        {{#each rows}}
+            <tr tabindex="0">
+                {{#each this}}
+                    {{#if @first}}
+                        <th scope="row">{{this}}</th>
+                    {{else}}
+                        <td>{{this}}</td>
+                    {{/if}}
                 {{/each}}
             </tr>
-        </thead>
-        <tbody>
-            {{#each rows}}
-                <tr>
-                    {{#each this}}
-                        {{#if @first}}
-                            <th scope="row">{{this}}</th>
-                        {{else}}   
-                            <td tabindex="0">{{this}}</td>
-                        {{/if}}
-                    {{/each}}
-                </tr>
-            {{/each}}
-        </tbody>
-    </table>
+        {{/each}}
+    </tbody>
+</table>

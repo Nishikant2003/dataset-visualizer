@@ -20,7 +20,7 @@ const DatasetView = Backbone.View.extend({
         this.listenTo(this.model, 'change', this.render);
         this.render();
         this.updateChartAriaLabel();
-
+        this.updateTableRowAriaLabel();
     },
 
 
@@ -41,7 +41,18 @@ const DatasetView = Backbone.View.extend({
         const message = `${dataset.caption} chart with x axis as ${dataset.headers[0]} with intervals at ${dataset.rows.map(row => row[0])} and y axis as ${dataset.caption} and lines depicting ${dataset.headers.slice(1).join(', ')}`;
         this.chartContainer.attr('aria-label', message);
     },
-
+    updateTableRowAriaLabel: function () {
+        const dataset = this.getCurrentDatasetValues();
+        const rowLabels = dataset.rows.map(row =>
+            row.map((cell, index) =>
+                index === 0 ? `Row label: ${cell}` : `Value for ${dataset.headers[index]}: ${cell}`
+            ).join(', ')
+        );
+        $('#table-container tbody tr').each(function (index) {
+            $(this).attr('aria-label', rowLabels[index]);
+            console.log(rowLabels[index]);
+        });
+    },
 
     /** updates the current dataset based on user selection from radio group*/
     updateDataset: function (event) {
@@ -50,8 +61,10 @@ const DatasetView = Backbone.View.extend({
         this.model.set('currentDataset', selectedDataset);
         this.announceChange(selectedDataset);
         this.updateChartAriaLabel();
+        this.updateTableRowAriaLabel();
 
     },
+
 
     /** renders the table handlebrar template based on the current dataset */
     render: function () {
