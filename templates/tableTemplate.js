@@ -29,7 +29,7 @@ templates['table-template'] = template({"1":function(container,depth0,helpers,pa
     + container.escapeExpression(container.lambda(depth0, depth0))
     + "</th>\r\n";
 },"7":function(container,depth0,helpers,partials,data) {
-    return "                        <td>"
+    return "                        <td aria-hidden=\"true\">"
     + container.escapeExpression(container.lambda(depth0, depth0))
     + "</td>\r\n";
 },"compiler":[8,">= 4.3.0"],"main":function(container,depth0,helpers,partials,data) {
@@ -40,11 +40,11 @@ templates['table-template'] = template({"1":function(container,depth0,helpers,pa
         return undefined
     };
 
-  return "<table role=\"table\" class=\"table table-bordered\">\r\n    <caption>"
-    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"caption") || (depth0 != null ? lookupProperty(depth0,"caption") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"caption","hash":{},"data":data,"loc":{"start":{"line":2,"column":13},"end":{"line":2,"column":24}}}) : helper)))
-    + "</caption>\r\n    <thead>\r\n        <tr>\r\n"
+  return "<table tabindex=\"0\" class=\"table table-bordered\" aria-describedby=\"tableDescription\">\r\n    <div class=\"sr-only\" id=\"tableDescription\">"
+    + container.escapeExpression(((helper = (helper = lookupProperty(helpers,"desc") || (depth0 != null ? lookupProperty(depth0,"desc") : depth0)) != null ? helper : container.hooks.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"desc","hash":{},"data":data,"loc":{"start":{"line":2,"column":47},"end":{"line":2,"column":55}}}) : helper)))
+    + "</div>\r\n    <thead aria-hidden=\"true\">\r\n        <tr>\r\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"headers") : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":5,"column":12},"end":{"line":7,"column":21}}})) != null ? stack1 : "")
-    + "        </tr>\r\n    </thead>\r\n    <tbody>\r\n"
+    + "        </tr>\r\n    </thead>\r\n    <tbody aria-hidden=\"true\">\r\n"
     + ((stack1 = lookupProperty(helpers,"each").call(alias1,(depth0 != null ? lookupProperty(depth0,"rows") : depth0),{"name":"each","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data,"loc":{"start":{"line":11,"column":8},"end":{"line":21,"column":17}}})) != null ? stack1 : "")
     + "    </tbody>\r\n</table>";
 },"useData":true});
