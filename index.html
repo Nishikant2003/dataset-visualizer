@@ -15,27 +15,31 @@
         <h1>Dataset Visualizer</h1>
 
         <!-- dataset selector radio button group -->
-        <div tabindex="0" role="radiogroup" aria-labelledby="dataset-label">
-            <p id="dataset-label">Choose Dataset from Monthly Expenses Dataset, Weather Dataset, and Quiz Scores
-                Dataset given below.</p>
+        <fieldset aria-describedby="dataset-instructions" aria-labelledby="dataset-label">
+            <legend id="dataset-label">Choose Dataset from Monthly Expenses Dataset, Weather Dataset, and Quiz Scores
+                Dataset given below.</legend>
 
-            <label><input type="radio" name="dataset" value="Monthly Expenses" checked> Monthly Expenses</label><br />
-            <label><input type="radio" name="dataset" value="Weather Data"> Weather Data</label><br />
-            <label><input type="radio" name="dataset" value="Quiz Scores"> Quiz Scores</label>
-        </div>
+                <label><input type="radio" name="dataset" value="Monthly Expenses" checked > Monthly Expenses</label><br />
+                <label><input type="radio" name="dataset" value="Weather Data" > Weather Data</label><br />
+                <label><input type="radio" name="dataset" value="Quiz Scores" > Quiz Scores</label>
+            
+            <div id="dataset-instructions" class="sr-only">Selecting a dataset will update both the chart and table below with new data, you can select new dataset using the up and down arrow keys on the keyboard</div>
+        </fieldset>
 
-        <div id="announcement" class="announcement" aria-live="polite"></div>
 
-        <div id="tooltips" class="tooltips "></div>
-
-        <div tabindex="0" id="chart-container" class="chart-container my-4">
+        <section id="chart-container" class="chart-container my-4" tabindex="0" >
             <!-- Flot JS Chart -->
-        </div>
-        
-        <div tabindex="0" id="table-container" class="table-responsive"> 
+        </section>
+
+        <section id="table-container" class="table-responsive" tabindex="0" >
             <!-- handlebar template for table added here from JS-->
-        </div>
-  
+        </section>
+
+
+        <div id="announcement" class="sr-only announcement" aria-live="polite"></div>
+
+        <div id="tooltips" class="tooltips" role="tooltip"></div>
+
     </main>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -46,6 +50,7 @@
     <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
     <script src="https://cdn.jsdelivr.net/jquery.flot/0.8.3/jquery.flot.min.js"></script>
     <script src="https://cdn.jsdelivr.net/jquery.flot/0.8.3/jquery.flot.resize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.18/paper-full.min.js"></script>
     <script src="models/dataset.js"></script>
     <script src="views/datasetView.js"></script>
 </body>

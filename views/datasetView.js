@@ -5,7 +5,8 @@ const DatasetView = Backbone.View.extend({
 
     /**trigger change event when <input name="dataset"> changes -> calls updateDataset*/
     events: {
-        'change input[name="dataset"]': 'updateDataset'
+        'change input[name="dataset"]': 'updateDataset',
+        'resize #chart': 'resizeChart'
     },
 
     /**aria-live polite, table-container and template initialized
@@ -31,6 +32,7 @@ const DatasetView = Backbone.View.extend({
             console.error('Error loading template:', error);
         });
     },
+
     /**Get the values of the current dataset */
     getCurrentDatasetValues: function () {
         const selectedDataset = this.model.get('currentDataset');
@@ -49,7 +51,7 @@ const DatasetView = Backbone.View.extend({
         this.chartContainer.attr('aria-label', message);
     },
 
- 
+
     /** updates the current dataset based on user selection from radio group*/
     updateDataset: function (event) {
         const selectedDataset = event.currentTarget.value;
@@ -78,26 +80,32 @@ const DatasetView = Backbone.View.extend({
         const seriesData = [];
 
         // Find all numeric columns (skip the first column, which is a label)
-        // Prepare a series for each numeric column
         for (let col = 1; col < headers.length; col++) {
-            const data = rows.map((row, i) => [i, row[col]]); //[[1, 1200], [1, 1200], ... [2, 1000], ...]]
-            /**flot js data format */
+            const data = rows.map((row, i) => [i, row[col]]);
             seriesData.push({
                 label: headers[col],
                 data: data,
                 lines: { show: true },
                 points: { show: true },
-
             });
         }
 
         // X-axis labels (first column)
         const xLabels = rows.map((row, i) => [i, row[0]]);
 
-        // Draw the chart
+        // Draw the chart with proper Paper.js setup
         $('#chart-container').empty();
-        $('#chart-container').append('<div aria-hidden="true" id="chart" style="width:100%;height:300px;"></div>');
-        $.plot('#chart', seriesData, {
+        $('#chart-container').append(`
+            <div style="position: relative; width: 100%; height: 300px;">
+                <div id="chart" style="width:100%;height:300px;"></div>
+                <canvas id="paper-overlay" width="600" height="300" 
+                        style="position:absolute;top:0;left:0;pointer-events:none;z-index:5;">
+                </canvas>
+            </div>
+        `);
+
+        // Create Flot chart
+        const plot = $.plot('#chart', seriesData, {
             xaxis: {
                 ticks: xLabels,
                 mode: "categories"
@@ -118,20 +126,100 @@ const DatasetView = Backbone.View.extend({
             }
         });
 
-        // //plothover event to show value on hover
+        // Initialize Paper.js AFTER canvas is in DOM
+        this.initializePaper(plot);
+
+        // Enhanced plothover event with Paper.js
+        const self = this;
         $('#chart').bind('plothover', function (event, pos, item) {
             if (item) {
                 const x = item.datapoint[0];
                 const y = item.datapoint[1];
-                console.log(`Hovered at x: ${x}, y: ${y} (${headers[item.seriesIndex]}) ${item.seriesIndex}`);
-                const message = `${headers[item.seriesIndex + 1]}: ${y} at ${xLabels[x][1]}`
-                $('#tooltips').html(message).css({ top: item.pageY + 5, left: item.pageX + 5 }).fadeIn(200);
+                
+                // Show regular tooltip
+                const message = `${headers[item.seriesIndex + 1]}: ${y} at ${xLabels[x][1]}`;
+                $('#tooltips').html(message).css({ 
+                    top: item.pageY + 5, 
+                    left: item.pageX + 5 
+                }).fadeIn(200);
+
+                // Add Paper.js enhancement
+                self.addPaperHighlight(plot, item);
+                
             } else {
                 $('#tooltips').hide();
+                self.clearPaperHighlights();
             }
         });
     },
 
+    /** Initialize Paper.js - add this method to your DatasetView */
+    initializePaper: function(plot) {
+        // Setup Paper.js with the canvas
+        paper.setup('paper-overlay');
+        
+        // Store plot reference for coordinate conversion
+        this.plot = plot;
+        
+        // Match canvas size to chart
+        const chartWidth = $('#chart').width();
+        const chartHeight = $('#chart').height();
+        paper.view.viewSize = new paper.Size(chartWidth, chartHeight);
+        
+        console.log('Paper.js initialized');
+    },
+
+    /** Add Paper.js highlight effect - add this method */
+    addPaperHighlight: function(plot, item) {
+        // Clear previous highlights
+        this.clearPaperHighlights();
+        
+        // Get pixel position of the data point
+        const plotPoint = plot.pointOffset({ 
+            x: item.datapoint[0], 
+            y: item.datapoint[1] 
+        });
+        
+        // Create animated highlight circle
+        const circle = new paper.Path.Circle({
+            center: [plotPoint.left, plotPoint.top+0.5],
+            radius: 10,
+            strokeColor: '#ff6b6b',
+            strokeWidth: 1,
+            dashArray: [4, 4],
+        });
+        
+       circle.onFrame = function(event) {
+            this.rotate(2); 
+       }
+
+        // Store reference for cleanup
+        this.currentHighlight = circle;
+        
+        paper.view.draw();
+    },
+
+    /** Clear Paper.js highlights - add this method */
+    clearPaperHighlights: function() {
+        if (this.currentHighlight) {
+            this.currentHighlight.remove();
+            this.currentHighlight = null;
+        }
+        paper.view.draw();
+    },
+
+    /** Update resize function */
+    resizeChart: function (event) {
+        // Resize Paper.js canvas to match chart
+        if (paper.view) {
+            const chartWidth = $('#chart').width();
+            const chartHeight = $('#chart').height();
+            
+            $('#paper-overlay').attr('width', chartWidth).attr('height', chartHeight);
+            paper.view.viewSize = new paper.Size(chartWidth, chartHeight);
+            paper.view.draw();
+        }
+    }
 });
 
 // Initialize the view when the page loads
