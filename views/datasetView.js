@@ -16,9 +16,11 @@ const DatasetView = Backbone.View.extend({
         this.tableContainer = $('#table-container');
         this.chartContainer = $('#chart-container');
         this.tableTemplate = Handlebars.templates['table-template'];
-        window.addEventListener('resize', (event) => {
+        // window.addEventListener('resize', (event) => {
+        // });
+        $(window).resize((event)=>{
             this.resizeChart(event);
-        });
+        })
         this.listenTo(this.model, 'change', this.render);
         this.render();
         this.updateChartAriaLabel();
@@ -114,7 +116,6 @@ const DatasetView = Backbone.View.extend({
         const plot = $.plot('#chart', seriesData, {
             xaxis: {
                 ticks: xLabels,
-                mode: "categories"
             },
             yaxis: {
                 min: 0

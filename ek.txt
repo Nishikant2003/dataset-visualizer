@@ -41,7 +41,7 @@
 
 
 issues:-
-1. use classnames for the events in backbone
-2. window onyl has resize event listener :) (use it for the chart resize)
-3. screen read only and focus mode learn it
-4. announceChange calling before the radio btn
+1. use classnames for the events in backbone//
+2. window onyl has resize event listener :) (use it for the chart resize)//
+3. screen read only and focus mode learn it//
+4. announceChange calling before the radio btn//
