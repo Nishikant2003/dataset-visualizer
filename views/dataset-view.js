@@ -45,7 +45,7 @@ const DatasetView = Backbone.View.extend({
         const selectedDataset = this.model.get('currentDataset');
         return this.model.get('datasets')[selectedDataset]
     },
-    /** changes the aria-live content */
+    /** changes the aria-live content */ 
     announceChange: function (selectedDataset) {
         const message = `Chart Updated to ${selectedDataset}`
         setTimeout(() => {
