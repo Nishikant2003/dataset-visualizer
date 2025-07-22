@@ -15,7 +15,7 @@ const DatasetModel = Backbone.Model.extend({
                     ['May', 1200, 325, 100, 155, 210],
                     ['June', 1200, 330, 105, 145, 230],
                 ],
-                desc:"This dataset represents the monthly expenses of a household, including rent, food, transport, utilities, and entertainment costs. You can use tab to navigate through the table rows."
+                desc:"This table represents the monthly expenses of a household, including rent, food, transport, utilities, and entertainment costs. You can use tab to navigate through the table rows."
             },
             'Weather Data': {
                 caption: 'Weather Data',
@@ -28,7 +28,7 @@ const DatasetModel = Backbone.Model.extend({
                     ['May', 22],
                     ['June', 27],
                 ],
-                desc:"This dataset represents the average monthly temperatures in degrees Celsius for a specific location, showing the seasonal changes in weather.  You can use tab to navigate through the table rows."
+                desc:"This table represents the average monthly temperatures in degrees Celsius for a specific location, showing the seasonal changes in weather.  You can use tab to navigate through the table rows."
             },
             'Quiz Scores': {
                 caption: 'Quiz Scores',
@@ -40,7 +40,7 @@ const DatasetModel = Backbone.Model.extend({
                     ['Test 4', 90, 92, 85, 87],
                     ['Test 5', 85, 88, 80, 90],
                 ],
-                desc:"This dataset contains scores from various quizzes in subjects like Math, Science, History, and English, providing insights into student performance across different subjects.  You can use tab to navigate through the table rows."
+                desc:"This table contains scores from various quizzes in subjects like Math, Science, History, and English, providing insights into student performance across different subjects.  You can use tab to navigate through the table rows."
             }
         }
     }

@@ -1,20 +1,20 @@
-<table tabindex="0" class="table table-bordered" aria-describedby="tableDescription">
-    <div class="sr-only" id="tableDescription">{{desc}}</div>
-    <thead aria-hidden="true">
+<table class="table table-bordered" aria-label="{{desc}}">
+    <caption >{{caption}}</caption>
+    <thead >
         <tr>
             {{#each headers}}
                 <th scope="col">{{this}}</th>
             {{/each}}
         </tr>
     </thead>
-    <tbody aria-hidden="true">
+    <tbody >
         {{#each rows}}
             <tr tabindex="0">
                 {{#each this}}
                     {{#if @first}}
                         <th scope="row">{{this}}</th>
                     {{else}}
-                        <td aria-hidden="true">{{this}}</td>
+                        <td>{{this}}</td>
                     {{/if}}
                 {{/each}}
             </tr>

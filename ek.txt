@@ -1,0 +1,39 @@
+        <!-- <table tabindex="0" class="table table-bordered" summary="This table shows the energy production by major source from 1960 to 1980.">
+  <caption>Energy Production by Major Source (1960-1980)</caption>
+  <thead>
+    <tr>
+      <th scope="col">Year</th>
+      <th scope="col">Coal (Mtoe)</th>
+      <th scope="col">Oil (Mtoe)</th>
+      <th scope="col">Gas (Mtoe)</th>
+      <th scope="col">Nuclear (Mtoe)</th>
+      <th scope="col">Hydro (Mtoe)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1960</th>
+      <td>200</td>
+      <td>150</td>
+      <td>80</td>
+      <td>10</td>
+      <td>30</td>
+    </tr>
+    <tr>
+      <th scope="row">1970</th>
+      <td>250</td>
+      <td>220</td>
+      <td>120</td>
+      <td>20</td>
+      <td>40</td>
+    </tr>
+    <tr>
+      <th scope="row">1980</th>
+      <td>300</td>
+      <td>280</td>
+      <td>160</td>
+      <td>30</td>
+      <td>50</td>
+    </tr>
+  </tbody>
+</table> -->
