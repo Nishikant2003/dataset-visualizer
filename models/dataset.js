@@ -19,7 +19,7 @@ const DatasetModel = Backbone.Model.extend({
             },
             'Weather Data': {
                 caption: 'Weather Data',
-                headers: ['Month', 'Avg Temp (°C)'],
+                headers: ['Month', 'Avg Temp'],
                 rows: [
                     ['January', 5],
                     ['February', 7],

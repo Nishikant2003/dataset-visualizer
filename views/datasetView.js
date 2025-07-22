@@ -5,8 +5,7 @@ const DatasetView = Backbone.View.extend({
 
     /**trigger change event when <input name="dataset"> changes -> calls updateDataset*/
     events: {
-        'change input[name="dataset"]': 'updateDataset',
-        'resize #chart': 'resizeChart'
+        'change .datasetInput': 'updateDataset',
     },
 
     /**aria-live polite, table-container and template initialized
@@ -17,13 +16,28 @@ const DatasetView = Backbone.View.extend({
         this.tableContainer = $('#table-container');
         this.chartContainer = $('#chart-container');
         this.tableTemplate = Handlebars.templates['table-template'];
+        window.addEventListener('resize', (event) => {
+            this.resizeChart(event);
+        });
         this.listenTo(this.model, 'change', this.render);
         this.render();
         this.updateChartAriaLabel();
-        this.updateTableRowAriaLabel();
     },
 
+    /** Update resize function */
+    resizeChart: function (event) {
+        // Resize Paper.js canvas to match chart
+        this.plotChart(this.getCurrentDatasetValues());
+        console.log('sss')
+        if (paper.view) {
+            const chartWidth = $('#chart').width();
+            const chartHeight = $('#chart').height();
 
+            $('#paper-overlay').attr('width', chartWidth).attr('height', chartHeight);
+            paper.view.viewSize = new paper.Size(chartWidth, chartHeight);
+            paper.view.draw();
+        }
+    },
     /**Get the values of the current dataset */
     getCurrentDatasetValues: function () {
         const selectedDataset = this.model.get('currentDataset');
@@ -32,7 +46,9 @@ const DatasetView = Backbone.View.extend({
     /** changes the aria-live content */
     announceChange: function (selectedDataset) {
         const message = `Chart Updated to ${selectedDataset}`
-        this.ariaLiveAnnouncer.text(message);
+        setTimeout(() => {
+            this.ariaLiveAnnouncer.text(message);
+        }, 100);
     },
 
     /** update the chart aria label */
@@ -41,28 +57,14 @@ const DatasetView = Backbone.View.extend({
         const message = `${dataset.caption} chart with x axis as ${dataset.headers[0]} with intervals at ${dataset.rows.map(row => row[0])} and y axis as ${dataset.caption} and lines depicting ${dataset.headers.slice(1).join(', ')}`;
         this.chartContainer.attr('aria-label', message);
     },
-    updateTableRowAriaLabel: function () {
-        const dataset = this.getCurrentDatasetValues();
-        const rowLabels = dataset.rows.map(row =>
-            row.map((cell, index) =>
-                index === 0 ? `Row label: ${cell}` : `Value for ${dataset.headers[index]}: ${cell}`
-            ).join(', ')
-        );
-        $('#table-container tbody tr').each(function (index) {
-            $(this).attr('aria-label', rowLabels[index]);
-            console.log(rowLabels[index]);
-        });
-    },
 
     /** updates the current dataset based on user selection from radio group*/
     updateDataset: function (event) {
         const selectedDataset = event.currentTarget.value;
         console.log(selectedDataset)
         this.model.set('currentDataset', selectedDataset);
-        this.announceChange(selectedDataset);
         this.updateChartAriaLabel();
-        this.updateTableRowAriaLabel();
-
+        this.announceChange(selectedDataset)
     },
 
 
@@ -97,12 +99,12 @@ const DatasetView = Backbone.View.extend({
         // X-axis labels (first column)
         const xLabels = rows.map((row, i) => [i, row[0]]);
 
-        // Draw the chart with proper Paper.js setup
+        // $('#chart-container').removeEventListener('resize', this.resizeChart);
         $('#chart-container').empty();
         $('#chart-container').append(`
-            <div aria-hidden=true style="position: relative; width: 100%; height: 300px;">
-                <div id="chart" style="width:100%;height:300px;"></div>
-                <canvas id="paper-overlay" width="600" height="300" 
+            <div aria-hidden='true' style="position: relative; width: 100%; height: 300px;">
+                <div aria-hidden='true' id="chart" style="width:100%;height:300px;"></div>
+                <canvas aria-hidden='true' id="paper-overlay" width="600" height="300" 
                         style="position:absolute;top:0;left:0;pointer-events:none;z-index:5;">
                 </canvas>
             </div>
@@ -119,12 +121,10 @@ const DatasetView = Backbone.View.extend({
             },
             grid: {
                 hoverable: true,
-                clickable: true
             },
             series: {
                 shadowSize: 0
             },
-            responsive: true,
             legend: {
                 show: true
             }
@@ -206,18 +206,7 @@ const DatasetView = Backbone.View.extend({
         paper.view.draw();
     },
 
-    /** Update resize function */
-    resizeChart: function (event) {
-        // Resize Paper.js canvas to match chart
-        if (paper.view) {
-            const chartWidth = $('#chart').width();
-            const chartHeight = $('#chart').height();
 
-            $('#paper-overlay').attr('width', chartWidth).attr('height', chartHeight);
-            paper.view.viewSize = new paper.Size(chartWidth, chartHeight);
-            paper.view.draw();
-        }
-    }
 });
 
 // Initialize the view when the page loads

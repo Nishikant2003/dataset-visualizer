@@ -1,4 +1,4 @@
-<table class="table table-bordered" aria-label="{{desc}}">
+<table class="table table-bordered">
     <caption >{{caption}}</caption>
     <thead >
         <tr>
@@ -9,7 +9,7 @@
     </thead>
     <tbody >
         {{#each rows}}
-            <tr tabindex="0">
+            <tr>
                 {{#each this}}
                     {{#if @first}}
                         <th scope="row">{{this}}</th>
