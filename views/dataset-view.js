@@ -33,7 +33,15 @@ const DatasetView = Backbone.View.extend({
     /** Update resize function */
     resizeChart: function (event) {
         this.plotChart(this.getCurrentDatasetValues());
-       
+        console.log('sss')
+        if (paper.view) {
+            const chartWidth = $('#chart').width();
+            const chartHeight = $('#chart').height();
+
+            $('#paper-overlay').attr('width', chartWidth).attr('height', chartHeight);
+            paper.view.viewSize = new paper.Size(chartWidth, chartHeight);
+            paper.view.draw();
+        }
     },
     /**Get the values of the current dataset */
     getCurrentDatasetValues: function () {
@@ -99,22 +107,95 @@ const DatasetView = Backbone.View.extend({
         // $('#chart-container').removeEventListener('resize', this.resizeChart);
         $('#chart-container').empty();
         $('#chart-container').append(`
+            <div aria-hidden='true' style="position: relative; width: 100%; height: 300px;">
                 <div aria-hidden='true' id="chart" style="width:100%;height:300px;"></div>
+                <canvas aria-hidden='true' id="paper-overlay" width="600" height="300" 
+                        style="position:absolute;top:0;left:0;pointer-events:none;z-index:5;">
+                </canvas>
+            </div>
         `);
 
-         $.plot('#chart', seriesData, {
+        // Create Flot chart
+        const plot = $.plot('#chart', seriesData, {
             xaxis: {
                 ticks: xLabels,
             },
             yaxis: {
                 min: 0
             },
+            grid: {
+                hoverable: true,
+            },
             series: {
                 shadowSize: 0
             },
            
         });
-        
+
+        this.initializePaper();
+
+        const self = this;
+        $('#chart').bind('plothover', function (event, pos, item) {
+            if (item) {
+                const x = item.datapoint[0];
+                const y = item.datapoint[1];
+                console.log(x,y,"ss")
+                // Show regular tooltip
+                const message = `${headers[item.seriesIndex + 1]}: ${y} at ${xLabels[x][1]}`;
+                $('#tooltips').html(message).css({
+                    top: item.pageY + 5,
+                    left: item.pageX + 5
+                }).fadeIn(200);
+
+                self.addPaperHighlight(plot, item);
+
+            } else {
+                $('#tooltips').hide();
+                self.clearPaperHighlights();
+            }
+        });
+    },
+
+    initializePaper: function () {
+        paper.setup('paper-overlay'); 
+        paper.view.viewSize = new paper.Size($('#chart').width(), $('#chart').height());
+    },
+
+    /** Add Paper.js highlight effect  */
+    addPaperHighlight: function (plot, item) {
+        // Clear previous highlights
+        this.clearPaperHighlights();
+
+        const plotPoint = plot.pointOffset({
+            x: item.datapoint[0],
+            y: item.datapoint[1]
+        });
+
+        const circle = new paper.Path.Circle({
+            center: [plotPoint.left, plotPoint.top + 0.5],
+            radius: 10,
+            strokeColor: '#ff6b6b',
+            strokeWidth: 1,
+            dashArray: [4, 4],
+        });
+
+        circle.onFrame = function (event) {
+            this.rotate(2);
+        }
+
+        // Store reference for cleanup
+        this.currentHighlight = circle;
+
+        paper.view.draw();
+    },
+
+    /** Clear Paper.js highlights  */
+    clearPaperHighlights: function () {
+        if (this.currentHighlight) {
+            this.currentHighlight.remove();
+            this.currentHighlight = null;
+        }
+        paper.view.draw();
     },
 
 
