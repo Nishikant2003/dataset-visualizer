@@ -53,7 +53,7 @@ const DatasetView = Backbone.View.extend({
         const message = `Chart Updated to ${selectedDataset}`
         setTimeout(() => {
             this.ariaLiveAnnouncer.text(message);
-        }, 100);
+        }, 0);
     },
 
     /** update the chart aria label */
@@ -189,7 +189,6 @@ const DatasetView = Backbone.View.extend({
         paper.view.draw();
     },
 
-    /** Clear Paper.js highlights  */
     clearPaperHighlights: function () {
         if (this.currentHighlight) {
             this.currentHighlight.remove();
